@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homepage-homelab-config
+  namespace: default
+  labels:
+    app: homepage-homelab
+data:
+  # Mounted at /config/application.yml and picked up by Spring Boot via
+  # SPRING_CONFIG_ADDITIONAL_LOCATION, overriding the packaged defaults.
+  # Non-secret settings only — API keys come from the Secret (env vars).
+  application.yml: |
+    profile:
+      name: "Puneet Singh"
+      title: "Senior DevOps & SRE Engineer"
+      summary: >-
+        Senior DevOps and SRE engineer with 7 years of experience building and operating
+        resilient, large-scale cloud-native platforms for one of the UK's leading
+        telecommunications providers. I specialize in Kubernetes, GitOps, observability,
+        and automation — designing infrastructure that stays reliable under real-world
+        scale, and running a self-hosted homelab that mirrors production-grade practices.
+      links:
+        linkedin: "CHANGE_ME"
+        github: "CHANGE_ME"
+        resume: "CHANGE_ME"
+        coverLetter: "CHANGE_ME"
+      certifications: []
+
+    prometheus:
+      url: "http://prometheus:9090"
+      queries:
+        cpuTempCelsius: 'node_hwmon_temp_celsius{chip="platform_coretemp_0",sensor="temp1"}'
+      disks:
+        - label: "SSD (root, NVMe)"
+          mountpoint: "/"
+          tempChip: "nvme_nvme0"
+        - label: "HDD 1 (Frigate)"
+          mountpoint: "/mntfrigate"
+        - label: "HDD 2 (media/apps)"
+          mountpoint: "/mnt"
+
+    apps:
+      services:
+        - name: sonarr
+          type: sonarr
+          baseUrl: "http://sonarr.default.svc.cluster.local"
+          apiKey: "${SONARR_API_KEY:CHANGE_ME}"
+          enabled: false
+        - name: radarr
+          type: radarr
+          baseUrl: "http://radarr.default.svc.cluster.local"
+          apiKey: "${RADARR_API_KEY:CHANGE_ME}"
+          enabled: false
+        - name: prowlarr
+          type: prowlarr
+          baseUrl: "http://prowlarr.default.svc.cluster.local"
+          apiKey: "${PROWLARR_API_KEY:CHANGE_ME}"
+          enabled: false
+        - name: qbittorrent
+          type: qbittorrent
+          baseUrl: "http://qbittorrent.default.svc.cluster.local"
+          apiKey: "${QBITTORRENT_API_KEY:CHANGE_ME}"
+          enabled: false

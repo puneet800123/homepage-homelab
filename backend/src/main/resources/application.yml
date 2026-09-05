@@ -1,0 +1,87 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: homepage-homelab
+  web:
+    resources:
+      # Serve the static frontend from the classpath (copied in at build time).
+      static-locations: classpath:/static/
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+
+# ---------------------------------------------------------------------------
+# Profile — static content shown on the site. Override via ConfigMap in k8s.
+# ---------------------------------------------------------------------------
+profile:
+  name: "Puneet Singh"
+  title: "Senior DevOps & SRE Engineer"
+  summary: >-
+    Senior DevOps and SRE engineer with 7 years of experience building and operating
+    resilient, large-scale cloud-native platforms for one of the UK's leading
+    telecommunications providers. I specialize in Kubernetes, GitOps, observability,
+    and automation — designing infrastructure that stays reliable under real-world
+    scale, and running a self-hosted homelab that mirrors production-grade practices.
+  links:
+    linkedin: "CHANGE_ME"      # e.g. https://www.linkedin.com/in/your-handle
+    github: "CHANGE_ME"        # e.g. https://github.com/puneet800123
+    resume: "CHANGE_ME"        # embedded resume link (provided later)
+    coverLetter: "CHANGE_ME"   # embedded cover letter link (provided later)
+  certifications: []           # e.g. [{ name: "CKA", issuer: "CNCF", year: "2024", verifyUrl: "..." }]
+
+# ---------------------------------------------------------------------------
+# Prometheus — source of live cluster metrics.
+# Disk mappings + CPU-temp query below match the verified homelab node.
+# ---------------------------------------------------------------------------
+prometheus:
+  url: "http://prometheus:9090"
+  queries:
+    cpuTempCelsius: 'node_hwmon_temp_celsius{chip="platform_coretemp_0",sensor="temp1"}'
+  disks:
+    - label: "SSD (root, NVMe)"
+      mountpoint: "/"
+      tempChip: "nvme_nvme0"
+    - label: "HDD 1 (Frigate)"
+      mountpoint: "/mntfrigate"
+    - label: "HDD 2 (media/apps)"
+      mountpoint: "/mnt"
+
+# ---------------------------------------------------------------------------
+# Self-hosted apps — proxied server-side. API keys come from a Secret (env).
+# All disabled/CHANGE_ME for v1; flip enabled + supply apiKey to activate.
+# ---------------------------------------------------------------------------
+apps:
+  services:
+    - name: sonarr
+      type: sonarr
+      baseUrl: "http://sonarr.default.svc.cluster.local"
+      apiKey: "${SONARR_API_KEY:CHANGE_ME}"
+      enabled: false
+    - name: radarr
+      type: radarr
+      baseUrl: "http://radarr.default.svc.cluster.local"
+      apiKey: "${RADARR_API_KEY:CHANGE_ME}"
+      enabled: false
+    - name: prowlarr
+      type: prowlarr
+      baseUrl: "http://prowlarr.default.svc.cluster.local"
+      apiKey: "${PROWLARR_API_KEY:CHANGE_ME}"
+      enabled: false
+    - name: qbittorrent
+      type: qbittorrent
+      baseUrl: "http://qbittorrent.default.svc.cluster.local"
+      apiKey: "${QBITTORRENT_API_KEY:CHANGE_ME}"
+      enabled: false
+
+logging:
+  level:
+    com.puneet.homelab: INFO

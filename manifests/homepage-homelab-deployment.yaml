@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homepage-homelab
+  namespace: default
+  labels:
+    app: homepage-homelab
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homepage-homelab
+  template:
+    metadata:
+      labels:
+        app: homepage-homelab
+    spec:
+      containers:
+        - name: homepage-homelab
+          # Built locally into the k3s containerd image store (see docs/BUILD.md).
+          # imagePullPolicy: IfNotPresent so k3s uses the locally-built image and
+          # does not try to pull from a remote registry.
+          image: homepage-homelab:0.1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 8080
+          env:
+            # Layer the ConfigMap's application.yml on top of the packaged defaults.
+            - name: SPRING_CONFIG_ADDITIONAL_LOCATION
+              value: "file:/config/application.yml"
+            # App API keys from the Secret (referenced by ${...} in the config).
+            - name: SONARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-homelab-secret
+                  key: SONARR_API_KEY
+            - name: RADARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-homelab-secret
+                  key: RADARR_API_KEY
+            - name: PROWLARR_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-homelab-secret
+                  key: PROWLARR_API_KEY
+            - name: QBITTORRENT_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: homepage-homelab-secret
+                  key: QBITTORRENT_API_KEY
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "256Mi"
+            limits:
+              memory: "512Mi"
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 20
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 40
+            periodSeconds: 20
+          volumeMounts:
+            - name: config
+              mountPath: /config
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: homepage-homelab-config

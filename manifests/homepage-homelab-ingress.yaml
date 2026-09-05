@@ -1,0 +1,23 @@
+# Optional: expose the dashboard through Traefik (the K3s default ingress).
+# Adjust the host and ingressClassName to your setup, then apply.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homepage-homelab
+  namespace: default
+  labels:
+    app: homepage-homelab
+spec:
+  ingressClassName: traefik
+  rules:
+    # CHANGE_ME: the hostname you want to serve the dashboard on.
+    - host: "home.example.com"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homepage-homelab
+                port:
+                  number: 80

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Puneet Singh — DevOps & SRE</title>
+  <meta name="description" content="Senior DevOps & SRE Engineer — live homelab dashboard." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="layout">
+    <!-- ============================= SIDEBAR ============================= -->
+    <aside class="sidebar">
+      <div class="identity">
+        <h1 class="name">
+          <a id="name-link" href="#" target="_blank" rel="noopener">…</a>
+        </h1>
+        <p class="title" id="title">…</p>
+        <p class="summary" id="summary">…</p>
+
+        <div class="cta">
+          <a id="resume-link" class="btn btn-primary" href="#" target="_blank" rel="noopener">Download Resume</a>
+          <a id="cover-link" class="btn" href="#" target="_blank" rel="noopener">Cover Letter</a>
+        </div>
+
+        <div class="social">
+          <a id="github-link" href="#" target="_blank" rel="noopener">GitHub</a>
+          <a id="linkedin-link2" href="#" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+      </div>
+
+      <div class="card quick-status">
+        <div class="card-head">Quick Status</div>
+        <div class="quick-row">
+          <span id="cluster-pill" class="pill pill-loading">● Checking…</span>
+        </div>
+        <div class="quick-sub" id="cluster-sub">Cluster: —</div>
+      </div>
+
+      <div class="card certs">
+        <div class="card-head">Certifications</div>
+        <ul id="certs-list" class="certs-list">
+          <li class="muted">Loading…</li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- ============================= MAIN =============================== -->
+    <main class="main">
+      <!-- Live cluster stats -->
+      <section id="infrastructure">
+        <h2 class="section-title">Live Infrastructure Status</h2>
+        <div class="grid metrics-grid">
+          <div class="card metric" data-metric="cpu">
+            <div class="metric-label">CPU Usage</div>
+            <div class="metric-value"><span id="cpu-val">—</span><span class="unit">%</span></div>
+            <div class="bar"><div id="cpu-bar" class="bar-fill"></div></div>
+          </div>
+
+          <div class="card metric" data-metric="cputemp">
+            <div class="metric-label">CPU Temperature</div>
+            <div class="metric-value"><span id="cputemp-val">—</span><span class="unit">°C</span></div>
+            <div class="bar"><div id="cputemp-bar" class="bar-fill"></div></div>
+          </div>
+
+          <div class="card metric" data-metric="memory">
+            <div class="metric-label">Memory</div>
+            <div class="metric-value"><span id="mem-val">—</span></div>
+            <div class="bar"><div id="mem-bar" class="bar-fill"></div></div>
+          </div>
+
+          <div class="card metric" data-metric="network">
+            <div class="metric-label">Network I/O</div>
+            <div class="metric-value net">
+              <span class="net-line">↓ <span id="net-rx">—</span></span>
+              <span class="net-line">↑ <span id="net-tx">—</span></span>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="subsection-title">Storage</h3>
+        <div class="grid disks-grid" id="disks-grid">
+          <div class="card muted">Loading disks…</div>
+        </div>
+      </section>
+
+      <!-- Self-hosted app status -->
+      <section id="apps">
+        <h2 class="section-title">Self-Hosted Application Status</h2>
+        <div class="grid apps-grid" id="apps-grid">
+          <div class="card muted">Loading apps…</div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="last-updated">—</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="js/app.js" defer></script>
+</body>
+</html>
