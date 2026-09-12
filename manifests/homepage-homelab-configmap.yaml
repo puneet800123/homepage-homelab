@@ -14,17 +14,33 @@ data:
       name: "Puneet Singh"
       title: "Senior DevOps & SRE Engineer"
       summary: >-
-        Senior DevOps and SRE engineer with 7 years of experience building and operating
-        resilient, large-scale cloud-native platforms for one of the UK's leading
-        telecommunications providers. I specialize in Kubernetes, GitOps, observability,
-        and automation — designing infrastructure that stays reliable under real-world
-        scale, and running a self-hosted homelab that mirrors production-grade practices.
+        DevOps Lead with 6+ years in large-scale telecom environments, specialising in
+        monitoring/observability platforms, CI/CD automation, Kubernetes-based
+        infrastructure, and AI-driven workflow integrations. Proven track record leading
+        engineering teams, driving DevOps culture, and delivering high-availability
+        platforms through IaC, containerisation, and continuous improvement.
       links:
-        linkedin: "CHANGE_ME"
-        github: "CHANGE_ME"
+        linkedin: "https://www.linkedin.com/in/puneet800123"
+        github: "https://github.com/puneet800123"
         resume: "CHANGE_ME"
         coverLetter: "CHANGE_ME"
-      certifications: []
+      certifications:
+        - name: "Certified Kubernetes Administrator (CKA)"
+          issuer: "The Linux Foundation"
+          year: "Feb 2026"
+          verifyUrl: "https://lnkd.in/ekSxsznh"
+        - name: "Claude Code in Action"
+          issuer: "Anthropic Education"
+          year: "Jul 2026"
+          verifyUrl: "https://verify.skilljar.com/c/cedighb2sxia"
+        - name: "Introduction to Model Context Protocol"
+          issuer: "Anthropic Education"
+          year: "Jul 2026"
+          verifyUrl: "https://verify.skilljar.com/c/26jjjpj3f5x7"
+        - name: "Model Context Protocol: Advanced Topics"
+          issuer: "Anthropic Education"
+          year: "Jul 2026"
+          verifyUrl: "https://verify.skilljar.com/c/zk9e72nie2h5"
 
     prometheus:
       url: "http://prometheus:9090"
@@ -39,25 +55,60 @@ data:
         - label: "HDD 2 (media/apps)"
           mountpoint: "/mnt"
 
+    system:
+      system: "Dell Precision Tower 3420"
+      os: "Debian GNU/Linux 12 (bookworm)"
+      kubernetes: "K3s v1.36.3+k3s1"
+      cpu:
+        model: "Intel Xeon E3-1245 v5"
+        cores: 8
+        baseClock: "3.50 GHz"
+      memory:
+        total: "24 GB"
+        type: "DDR4"
+        speed: "3200 MT/s (rated)"
+        configuredSpeed: "2133 MT/s"
+      disks:
+        - label: "SSD (root)"
+          model: "ADATA XPG GAMMIX S70 BLADE"
+          capacity: "512 GB"
+          type: "NVMe SSD"
+          mountpoint: "/"
+        - label: "HDD 1 (Frigate)"
+          model: "Seagate ST1000LM024"
+          capacity: "1 TB"
+          type: "HDD 5400rpm"
+          mountpoint: "/mntfrigate"
+        - label: "HDD 2 (media/apps)"
+          model: "Seagate ST1000DM003"
+          capacity: "1 TB"
+          type: "HDD 7200rpm"
+          mountpoint: "/mnt"
+
     apps:
       services:
         - name: sonarr
           type: sonarr
-          baseUrl: "http://sonarr.default.svc.cluster.local"
+          baseUrl: "http://sonarr"
           apiKey: "${SONARR_API_KEY:CHANGE_ME}"
-          enabled: false
+          enabled: true
         - name: radarr
           type: radarr
-          baseUrl: "http://radarr.default.svc.cluster.local"
+          baseUrl: "http://radarr"
           apiKey: "${RADARR_API_KEY:CHANGE_ME}"
-          enabled: false
+          enabled: true
         - name: prowlarr
           type: prowlarr
-          baseUrl: "http://prowlarr.default.svc.cluster.local"
+          baseUrl: "http://prowlarr"
           apiKey: "${PROWLARR_API_KEY:CHANGE_ME}"
-          enabled: false
+          enabled: true
+        - name: immich
+          type: immich
+          baseUrl: "http://immich-server:2283"
+          apiKey: "${IMMICH_API_KEY:CHANGE_ME}"
+          enabled: true
         - name: qbittorrent
           type: qbittorrent
-          baseUrl: "http://qbittorrent.default.svc.cluster.local"
-          apiKey: "${QBITTORRENT_API_KEY:CHANGE_ME}"
-          enabled: false
+          baseUrl: "http://qbittorrent:8080"
+          apiKey: ""
+          enabled: true

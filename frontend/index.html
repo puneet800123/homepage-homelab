@@ -4,15 +4,38 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Puneet Singh — DevOps & SRE</title>
-  <meta name="description" content="Senior DevOps & SRE Engineer — live homelab dashboard." />
+  <meta name="description" content="Puneet Singh — DevOps Lead & SRE. Kubernetes, GitOps, observability, automation." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
-  <div class="layout">
-    <!-- ============================= SIDEBAR ============================= -->
-    <aside class="sidebar">
-      <div class="identity">
+  <!-- Fancy layered background -->
+  <div class="bg-aurora" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ============================== NAV ============================== -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-brand" href="#top">
+        <span class="brand-prompt">~/puneet800123</span><span class="brand-cursor">$</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#skills">Skills</a></li>
+        <li><a href="#experience">Experience</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#certs">Certifications</a></li>
+        <li><a href="#awards">Awards</a></li>
+        <li><a class="nav-cta" href="dashboard.html">Live Dashboard →</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page" id="top">
+    <!-- ============================= HERO ============================= -->
+    <header class="hero" id="about">
+      <div class="hero-main">
         <h1 class="name">
           <a id="name-link" href="#" target="_blank" rel="noopener">…</a>
         </h1>
@@ -22,74 +45,169 @@
         <div class="cta">
           <a id="resume-link" class="btn btn-primary" href="#" target="_blank" rel="noopener">Download Resume</a>
           <a id="cover-link" class="btn" href="#" target="_blank" rel="noopener">Cover Letter</a>
-        </div>
-
-        <div class="social">
-          <a id="github-link" href="#" target="_blank" rel="noopener">GitHub</a>
-          <a id="linkedin-link2" href="#" target="_blank" rel="noopener">LinkedIn</a>
+          <a id="github-link" class="btn btn-ghost" href="#" target="_blank" rel="noopener">GitHub</a>
+          <a id="linkedin-link2" class="btn btn-ghost" href="#" target="_blank" rel="noopener">LinkedIn</a>
         </div>
       </div>
 
-      <div class="card quick-status">
-        <div class="card-head">Quick Status</div>
-        <div class="quick-row">
+      <!-- Homelab teaser: proof the "I run a homelab" claim is real + live -->
+      <a class="hero-status homelab-teaser" href="dashboard.html">
+        <div class="teaser-glow" aria-hidden="true"></div>
+        <div class="teaser-top">
+          <span class="teaser-title">Self-Hosted Homelab</span>
+          <span class="live-badge"><span class="live-dot"></span>LIVE</span>
+        </div>
+        <div class="teaser-status">
           <span id="cluster-pill" class="pill pill-loading">● Checking…</span>
+          <span class="teaser-sub" id="cluster-sub">K3s cluster</span>
         </div>
-        <div class="quick-sub" id="cluster-sub">Cluster: —</div>
-      </div>
-
-      <div class="card certs">
-        <div class="card-head">Certifications</div>
-        <ul id="certs-list" class="certs-list">
-          <li class="muted">Loading…</li>
-        </ul>
-      </div>
-    </aside>
+        <div class="teaser-stats">
+          <div class="ts-item"><span class="ts-val" id="cs-nodes">—</span><span class="ts-key">Nodes</span></div>
+          <div class="ts-item"><span class="ts-val" id="cs-cores">—</span><span class="ts-key">CPU Cores</span></div>
+          <div class="ts-item"><span class="ts-val" id="cs-pods">—</span><span class="ts-key">Pods</span></div>
+          <div class="ts-item"><span class="ts-val" id="cs-mem">—</span><span class="ts-key">Memory</span></div>
+        </div>
+        <div class="teaser-cta">Open live dashboard <span class="teaser-arrow">→</span></div>
+      </a>
+    </header>
 
     <!-- ============================= MAIN =============================== -->
     <main class="main">
-      <!-- Live cluster stats -->
-      <section id="infrastructure">
-        <h2 class="section-title">Live Infrastructure Status</h2>
-        <div class="grid metrics-grid">
-          <div class="card metric" data-metric="cpu">
-            <div class="metric-label">CPU Usage</div>
-            <div class="metric-value"><span id="cpu-val">—</span><span class="unit">%</span></div>
-            <div class="bar"><div id="cpu-bar" class="bar-fill"></div></div>
+      <div class="row-2col">
+      <div class="col-stack">
+      <!-- Technical skills — rendered as a kubectl terminal -->
+      <section id="skills">
+        <h2 class="section-title">Technical Skills</h2>
+        <div class="terminal">
+          <div class="term-head">
+            <span class="term-dot red"></span>
+            <span class="term-dot amber"></span>
+            <span class="term-dot green"></span>
+            <span class="term-title">puneet@homelab: ~</span>
           </div>
+          <pre class="term-body"><span class="term-prompt">puneet@homelab</span>:<span class="term-path">~</span>$ kubectl get techskills -n puneet -o jsonpath=<span class="k-str">'{.spec}'</span> | jq
 
-          <div class="card metric" data-metric="cputemp">
-            <div class="metric-label">CPU Temperature</div>
-            <div class="metric-value"><span id="cputemp-val">—</span><span class="unit">°C</span></div>
-            <div class="bar"><div id="cputemp-bar" class="bar-fill"></div></div>
-          </div>
-
-          <div class="card metric" data-metric="memory">
-            <div class="metric-label">Memory</div>
-            <div class="metric-value"><span id="mem-val">—</span></div>
-            <div class="bar"><div id="mem-bar" class="bar-fill"></div></div>
-          </div>
-
-          <div class="card metric" data-metric="network">
-            <div class="metric-label">Network I/O</div>
-            <div class="metric-value net">
-              <span class="net-line">↓ <span id="net-rx">—</span></span>
-              <span class="net-line">↑ <span id="net-tx">—</span></span>
-            </div>
-          </div>
-        </div>
-
-        <h3 class="subsection-title">Storage</h3>
-        <div class="grid disks-grid" id="disks-grid">
-          <div class="card muted">Loading disks…</div>
+{
+  <span class="k-key">"Infrastructure &amp; Cloud"</span>: <span class="k-str">"Kubernetes, Docker, AWS, GCP, Azure"</span>,
+  <span class="k-key">"Observability"</span>: <span class="k-str">"Nagios, Prometheus, Grafana, ELK, Dynatrace, FluentBit"</span>,
+  <span class="k-key">"CI/CD &amp; DevOps"</span>: <span class="k-str">"Jenkins, GitLab, Helm, Maven, JMeter"</span>,
+  <span class="k-key">"Languages / SQL"</span>: <span class="k-str">"Java, OracleDB, PostgreSQL, Bash, Python"</span>
+}
+<span class="term-prompt">puneet@homelab</span>:<span class="term-path">~</span>$ <span class="term-blink">▋</span></pre>
         </div>
       </section>
 
-      <!-- Self-hosted app status -->
-      <section id="apps">
-        <h2 class="section-title">Self-Hosted Application Status</h2>
-        <div class="grid apps-grid" id="apps-grid">
-          <div class="card muted">Loading apps…</div>
+      <!-- Certifications -->
+      <section id="certs">
+        <h2 class="section-title">Certifications</h2>
+        <ul id="certs-list" class="certs-list certs-stacked">
+          <li class="muted">Loading…</li>
+        </ul>
+      </section>
+      </div>
+
+      <!-- Experience timeline -->
+      <section id="experience">
+        <h2 class="section-title">Experience</h2>
+        <div class="timeline">
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content card">
+              <div class="tl-head">
+                <span class="tl-role">Technology Lead</span>
+                <span class="tl-date">Jul 2025 - Present</span>
+              </div>
+              <div class="tl-org">Infosys Ltd. · Ipswich, UK | Chandigarh, India</div>
+              <ul class="tl-points">
+                <li>Designed and implemented Model Context Protocol (MCP) servers, establishing seamless integrations with Git, Jira, and Confluence to streamline development workflows and project tracking.</li>
+                <li>Led DevOps delivery for five Kubernetes clusters, ~100 nodes, and 50+ microservices, while mentoring engineers and contributing to sprint planning and technical design reviews.</li>
+                <li>Led the Salesforce Field Service Gateway migration for a team of 10+ engineers, delivering a scalable integration platform using Java microservices, Kafka, and API-based communication.</li>
+                <li>Migrated standalone PostgreSQL to a multi-site, active-active CloudNativePG cluster, reducing failover time to under 10 seconds and improving backup and disaster recovery capabilities.</li>
+                <li>Built and governed AWS infrastructure using Terraform for EKS, RDS, and IAM, while leveraging Python scripting to automate Kubernetes upgrades, patching, certificate renewals, secrets management, and failover testing.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content card">
+              <div class="tl-head">
+                <span class="tl-role">Technology Analyst</span>
+                <span class="tl-date">Jul 2022 - Jun 2025</span>
+              </div>
+              <div class="tl-org">Infosys Ltd. · Ipswich, UK</div>
+              <ul class="tl-points">
+                <li>Designed and implemented a multi-site, active-active Kubernetes platform using Ansible, achieving 99.99% availability and improving application performance by up to 50%.</li>
+                <li>Built Jenkins CI/CD pipelines with pull-request validation, SonarQube checks, approvals, and production deployment, reducing release time to under five minutes.</li>
+                <li>Led a blue-green infrastructure migration to remove security vulnerabilities, enabling zero-downtime cutover, rollback readiness, and safe decommissioning of the legacy environment.</li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-dot"></div>
+            <div class="tl-content card">
+              <div class="tl-head">
+                <span class="tl-role">Systems Engineer &amp; Senior Systems Engineer</span>
+                <span class="tl-date">Sep 2019 - Jul 2022</span>
+              </div>
+              <div class="tl-org">Infosys Ltd. · Chandigarh, India</div>
+              <ul class="tl-points">
+                <li>Executed a zero-downtime migration of legacy workloads from on-premises infrastructure to AWS, improving scalability and service continuity.</li>
+                <li>Refactored monolithic Java applications into containerised Spring Boot microservices and deployed them using Docker, Kubernetes, and Jenkins.</li>
+                <li>Optimised AWS infrastructure for applications supporting 2,000+ concurrent users, reducing monthly cloud expenditure to under US$1,000.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+      </div>
+
+      <!-- Projects -->
+      <section id="projects">
+        <h2 class="section-title">Projects</h2>
+        <div class="projects-grid">
+          <a class="card project-card" href="https://github.com/puneet800123/cloud-native-homelab" target="_blank" rel="noopener">
+            <div class="project-head">
+              <span class="project-name">cloud-native-homelab</span>
+              <span class="repo-badge">GitHub ↗</span>
+            </div>
+            <p class="project-desc">GitOps-style Kubernetes manifests and automation for a self-hosted K3s
+              homelab — Deployments, Services, ConfigMaps/Secrets, ingress, and observability, organised by
+              category with helper scripts.</p>
+            <div class="project-tags">
+              <span class="tag">Kubernetes</span><span class="tag">YAML</span><span class="tag">GitOps</span>
+              <span class="tag">Bash</span><span class="tag">Prometheus</span>
+            </div>
+          </a>
+
+          <a class="card project-card" href="https://github.com/puneet800123/homepage-homelab" target="_blank" rel="noopener">
+            <div class="project-head">
+              <span class="project-name">homepage-homelab</span>
+              <span class="repo-badge">GitHub ↗</span>
+            </div>
+            <p class="project-desc">This site — a Java Spring Boot backend serving a vanilla HTML/CSS/JS
+              portfolio and a live homelab dashboard, aggregating Prometheus metrics and self-hosted app APIs.
+              Built into a container and deployed to K3s.</p>
+            <div class="project-tags">
+              <span class="tag">Java</span><span class="tag">Spring Boot</span><span class="tag">HTML/CSS/JS</span>
+              <span class="tag">Docker</span><span class="tag">K3s</span>
+            </div>
+          </a>
+        </div>
+      </section>
+
+      <!-- Awards & Recognition -->
+      <section id="awards">
+        <h2 class="section-title">Awards &amp; Recognition</h2>
+        <div class="awards-grid">
+          <div class="card award-card"><span class="award-name">Insta Award</span><span class="award-org">Infosys</span><span class="award-date">Jun 2021</span></div>
+          <div class="card award-card"><span class="award-name">Insta Award</span><span class="award-org">Infosys</span><span class="award-date">Aug 2022</span></div>
+          <div class="card award-card"><span class="award-name">Star Performer</span><span class="award-org">British Telecom</span><span class="award-date">Nov 2022</span></div>
+          <div class="card award-card"><span class="award-name">Insta Award</span><span class="award-org">Infosys</span><span class="award-date">Jun 2023</span></div>
+          <div class="card award-card"><span class="award-name">Insta Award</span><span class="award-org">Infosys</span><span class="award-date">Mar 2024</span></div>
+          <div class="card award-card"><span class="award-name">Tech-Xpert</span><span class="award-org">Infosys</span><span class="award-date">Apr 2025</span></div>
+          <div class="card award-card featured"><span class="award-name">Best Engineering Team of the Year</span><span class="award-org">DevOps Show 2025 · organized by Quantic, hosted by Last9</span><span class="award-date">Feb 2025</span></div>
         </div>
       </section>
 
@@ -99,6 +217,7 @@
     </main>
   </div>
 
-  <script src="js/app.js" defer></script>
+  <script src="js/common.js" defer></script>
+  <script src="js/portfolio.js" defer></script>
 </body>
 </html>

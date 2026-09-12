@@ -45,11 +45,11 @@ spec:
                 secretKeyRef:
                   name: homepage-homelab-secret
                   key: PROWLARR_API_KEY
-            - name: QBITTORRENT_API_KEY
+            - name: IMMICH_API_KEY
               valueFrom:
                 secretKeyRef:
                   name: homepage-homelab-secret
-                  key: QBITTORRENT_API_KEY
+                  key: IMMICH_API_KEY
           resources:
             requests:
               cpu: "100m"

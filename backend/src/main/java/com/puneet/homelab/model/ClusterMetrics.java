@@ -13,8 +13,18 @@ public record ClusterMetrics(
         Memory memory,
         Network network,
         List<Disk> disks,
+        Cluster cluster,
         Boolean prometheusReachable
 ) {
+    /** Cluster-wide inventory counts. */
+    public record Cluster(
+            Integer nodes,
+            Integer podsTotal,
+            Integer podsRunning,
+            Integer cpuCores,
+            Long memoryTotalBytes
+    ) {}
+
     public record Memory(
             Long usedBytes,
             Long totalBytes,

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Homelab Dashboard — Puneet Singh</title>
+  <meta name="description" content="Live self-hosted K3s homelab dashboard: cluster metrics, storage, apps." />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- Fancy layered background -->
+  <div class="bg-aurora" aria-hidden="true"></div>
+  <div class="bg-grid" aria-hidden="true"></div>
+
+  <!-- ============================== NAV ============================== -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <a class="nav-brand" href="index.html">
+        <span class="brand-prompt">~/puneet800123</span><span class="brand-cursor">$</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#infrastructure">Infrastructure</a></li>
+        <li><a href="#apps">App Status</a></li>
+        <li><a href="#system">System</a></li>
+        <li><a class="nav-cta" href="index.html">← Portfolio</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="page" id="top">
+    <!-- ============================= HERO / STATUS ==================== -->
+    <header class="hero dash-hero">
+      <div class="hero-main">
+        <h1 class="name">Homelab Dashboard</h1>
+        <p class="title">Self-hosted K3s cluster · live metrics</p>
+        <p class="summary">Real-time view of the single-node K3s homelab — cluster health, resource
+          utilisation, storage, and the status of self-hosted applications. Powered by Prometheus +
+          node-exporter, aggregated by a Spring Boot backend.</p>
+      </div>
+
+      <div class="hero-status card quick-status">
+        <div class="card-head">Cluster Status</div>
+        <div class="quick-row">
+          <span id="cluster-pill" class="pill pill-loading">● Checking…</span>
+        </div>
+        <div class="quick-sub" id="cluster-sub">Cluster: —</div>
+        <ul class="cluster-stats" id="cluster-stats">
+          <li><span class="cs-key">Nodes</span><span class="cs-val" id="cs-nodes">—</span></li>
+          <li><span class="cs-key">Pods</span><span class="cs-val" id="cs-pods">—</span></li>
+          <li><span class="cs-key">CPU Cores</span><span class="cs-val" id="cs-cores">—</span></li>
+          <li><span class="cs-key">Memory</span><span class="cs-val" id="cs-mem">—</span></li>
+        </ul>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Live cluster stats -->
+      <section id="infrastructure">
+        <h2 class="section-title">Live Infrastructure Status</h2>
+
+        <!-- Radial gauges: CPU, CPU temp, Memory -->
+        <div class="gauges-row">
+          <div class="card gauge-card">
+            <canvas class="gauge" id="gauge-cpu" width="180" height="140"></canvas>
+            <div class="gauge-label">CPU Usage</div>
+          </div>
+          <div class="card gauge-card">
+            <canvas class="gauge" id="gauge-cputemp" width="180" height="140"></canvas>
+            <div class="gauge-label">CPU Temperature</div>
+          </div>
+          <div class="card gauge-card">
+            <canvas class="gauge" id="gauge-mem" width="180" height="140"></canvas>
+            <div class="gauge-label">Memory <span id="mem-sub" class="gauge-sub">—</span></div>
+          </div>
+        </div>
+
+        <!-- Storage: horizontal bar gauges -->
+        <h3 class="subsection-title">Storage</h3>
+        <div class="disk-bars" id="disk-bars">
+          <div class="muted">Loading disks…</div>
+        </div>
+
+        <!-- Trend charts (canvas, drawn from /api/cluster/history) -->
+        <h3 class="subsection-title">Trends (last 30 min)</h3>
+        <div class="grid charts-grid">
+          <div class="card chart-card">
+            <div class="chart-head">
+              <span class="chart-title">CPU Usage</span>
+              <span class="chart-now" id="cpu-now">—</span>
+            </div>
+            <canvas class="chart" id="chart-cpu" height="90"></canvas>
+          </div>
+
+          <div class="card chart-card">
+            <div class="chart-head">
+              <span class="chart-title">Memory Usage</span>
+              <span class="chart-now" id="mem-now">—</span>
+            </div>
+            <canvas class="chart" id="chart-mem" height="90"></canvas>
+          </div>
+
+          <div class="card chart-card">
+            <div class="chart-head">
+              <span class="chart-title">Network I/O</span>
+              <span class="chart-now net" id="net-now">↓ — · ↑ —</span>
+            </div>
+            <canvas class="chart" id="chart-net" height="90"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Self-hosted app status -->
+      <section id="apps">
+        <h2 class="section-title">Self-Hosted Application Status</h2>
+        <div class="grid apps-grid" id="apps-grid">
+          <div class="card muted">Loading apps…</div>
+        </div>
+      </section>
+
+      <!-- System / hardware config -->
+      <section id="system">
+        <h2 class="section-title">System &amp; Hardware</h2>
+        <div class="grid sysinfo-grid" id="sysinfo">
+          <div class="card muted">Loading system info…</div>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <span id="last-updated">—</span>
+      </footer>
+    </main>
+  </div>
+
+  <script src="js/common.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+</body>
+</html>
