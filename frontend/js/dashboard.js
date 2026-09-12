@@ -240,22 +240,62 @@ function renderApps(apps) {
     grid.innerHTML = `<div class="card muted">No applications configured.</div>`;
     return;
   }
-  grid.innerHTML = apps.map((a) => {
-    const [cls, label] = HEALTH_PILL[a.health] || HEALTH_PILL.NOT_CONFIGURED;
-    const stats = a.stats && Object.keys(a.stats).length
-      ? `<div class="app-stats">` +
-        Object.entries(a.stats).map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("") +
-        `</div>`
-      : "";
-    return `
-      <div class="card app-card">
-        <div class="app-head">
-          <span class="app-name">${a.name}</span>
-          <span class="pill ${cls}">${label}</span>
-        </div>
-        ${stats}
-      </div>`;
+  // Group by category, preserving a sensible category order.
+  const ORDER = ["Media", "Observability", "Smart Home", "Apps & Tools", "Databases & Infra", "Other"];
+  const groups = {};
+  apps.forEach((a) => {
+    const cat = a.category || "Other";
+    (groups[cat] = groups[cat] || []).push(a);
+  });
+  const cats = Object.keys(groups).sort((a, b) => {
+    const ia = ORDER.indexOf(a), ib = ORDER.indexOf(b);
+    return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+  });
+
+  grid.innerHTML = cats.map((cat) => {
+    const meta = CATEGORY_META[cat] || CATEGORY_META.Other;
+    const list = groups[cat];
+    const okCount = list.filter((a) => a.health === "OK").length;
+    const tiles = list.map(appTile).join("");
+    return `<section class="app-cat cat-${meta.slug}" style="--cat:${meta.color}">
+        <header class="app-cat-head">
+          <span class="app-cat-icon">${meta.icon}</span>
+          <h3 class="app-cat-title">${cat}</h3>
+          <span class="app-cat-count">${okCount}/${list.length} up</span>
+        </header>
+        <div class="grid apps-subgrid">${tiles}</div>
+      </section>`;
   }).join("");
+}
+
+// Per-category color + icon for visual distinction.
+const CATEGORY_META = {
+  "Media":             { slug: "media",   color: "#f472b6", icon: "🎬" },
+  "Observability":     { slug: "obs",     color: "#38bdf8", icon: "📊" },
+  "Smart Home":        { slug: "smart",   color: "#34d399", icon: "🏠" },
+  "Apps & Tools":      { slug: "apps",    color: "#a78bfa", icon: "🧰" },
+  "Databases & Infra": { slug: "db",      color: "#f5b942", icon: "🗄️" },
+  "Other":             { slug: "other",   color: "#93a1b3", icon: "📦" },
+};
+
+function appTile(a) {
+  const [cls, label] = HEALTH_PILL[a.health] || HEALTH_PILL.NOT_CONFIGURED;
+  const stats = a.stats && Object.keys(a.stats).length
+    ? `<div class="app-stats">` +
+      Object.entries(a.stats).map(([k, v]) => `<div><span>${k}</span><span>${v}</span></div>`).join("") +
+      `</div>`
+    : "";
+  const inner = `
+      <div class="app-head">
+        <span class="app-name">${a.name}</span>
+        <span class="pill ${cls}">${label}</span>
+      </div>
+      ${stats}`;
+  if (a.nodePort) {
+    const url = `http://${location.hostname}:${a.nodePort}`;
+    return `<a class="card app-card app-link" href="${url}" target="_blank" rel="noopener">${inner}<span class="app-open">Open ↗</span></a>`;
+  }
+  return `<div class="card app-card">${inner}</div>`;
 }
 
 function appsError() {

@@ -15,6 +15,7 @@ spec:
       labels:
         app: homepage-homelab
     spec:
+      serviceAccountName: homepage-homelab
       containers:
         - name: homepage-homelab
           # Built locally into the k3s containerd image store (see docs/BUILD.md).

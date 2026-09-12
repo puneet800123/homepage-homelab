@@ -1,0 +1,37 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: homepage-homelab
+  namespace: default
+  labels:
+    app: homepage-homelab
+---
+# Read-only access to Services so the dashboard can resolve NodePorts live
+# (keeps tile links correct even if a NodePort changes).
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: homepage-homelab-svc-reader
+  namespace: default
+  labels:
+    app: homepage-homelab
+rules:
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: homepage-homelab-svc-reader
+  namespace: default
+  labels:
+    app: homepage-homelab
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: homepage-homelab-svc-reader
+subjects:
+  - kind: ServiceAccount
+    name: homepage-homelab
+    namespace: default

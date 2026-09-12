@@ -25,6 +25,12 @@ public class AppsProperties {
         private String apiKey;
         /** Whether to include this app on the dashboard. */
         private boolean enabled = true;
+        /** NodePort the app is reachable on (for the clickable tile link). 0 = none. */
+        private int nodePort = 0;
+        /** K8s Service name to resolve the NodePort from live (preferred over nodePort). */
+        private String serviceName;
+        /** Grouping category shown on the dashboard, e.g. "Media", "Observability". */
+        private String category = "Other";
 
         public boolean isConfigured() {
             return enabled
@@ -43,6 +49,12 @@ public class AppsProperties {
         public void setApiKey(String apiKey) { this.apiKey = apiKey; }
         public boolean isEnabled() { return enabled; }
         public void setEnabled(boolean enabled) { this.enabled = enabled; }
+        public int getNodePort() { return nodePort; }
+        public void setNodePort(int nodePort) { this.nodePort = nodePort; }
+        public String getServiceName() { return serviceName; }
+        public void setServiceName(String serviceName) { this.serviceName = serviceName; }
+        public String getCategory() { return category; }
+        public void setCategory(String category) { this.category = category; }
     }
 
     public List<AppConfig> getServices() { return services; }

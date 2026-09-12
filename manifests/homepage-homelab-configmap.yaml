@@ -14,7 +14,7 @@ data:
       name: "Puneet Singh"
       title: "Senior DevOps & SRE Engineer"
       summary: >-
-        DevOps Lead with 6+ years in large-scale telecom environments, specialising in
+        DevOps Lead with 7+ years in large-scale telecom environments, specialising in
         monitoring/observability platforms, CI/CD automation, Kubernetes-based
         infrastructure, and AI-driven workflow integrations. Proven track record leading
         engineering teams, driving DevOps culture, and delivering high-availability
@@ -22,8 +22,8 @@ data:
       links:
         linkedin: "https://www.linkedin.com/in/puneet800123"
         github: "https://github.com/puneet800123"
-        resume: "CHANGE_ME"
-        coverLetter: "CHANGE_ME"
+        resume: "https://files.puneet800123.com/api/public/dl/P9ugp2xC?inline=true"
+        coverLetter: "https://files.puneet800123.com/api/public/dl/hWIANdBo?inline=true"
       certifications:
         - name: "Certified Kubernetes Administrator (CKA)"
           issuer: "The Linux Foundation"
@@ -87,28 +87,200 @@ data:
 
     apps:
       services:
+        # ---------------- Media ----------------
         - name: sonarr
           type: sonarr
+          category: Media
           baseUrl: "http://sonarr"
           apiKey: "${SONARR_API_KEY:CHANGE_ME}"
           enabled: true
+          serviceName: sonarr
         - name: radarr
           type: radarr
+          category: Media
           baseUrl: "http://radarr"
           apiKey: "${RADARR_API_KEY:CHANGE_ME}"
           enabled: true
+          serviceName: radarr
         - name: prowlarr
           type: prowlarr
+          category: Media
           baseUrl: "http://prowlarr"
           apiKey: "${PROWLARR_API_KEY:CHANGE_ME}"
           enabled: true
+          serviceName: prowlarr
+        - name: lidarr
+          type: generic
+          category: Media
+          baseUrl: "http://lidarr"
+          enabled: true
+          serviceName: lidarr
+        - name: bazarr
+          type: generic
+          category: Media
+          baseUrl: "http://bazarr/bazarr"
+          enabled: true
+          serviceName: bazarr
+        - name: jellyfin
+          type: generic
+          category: Media
+          baseUrl: "http://jellyfin"
+          enabled: true
+          serviceName: jellyfin
+        - name: jellyseerr
+          type: generic
+          category: Media
+          baseUrl: "http://jellyseerr"
+          enabled: true
+          serviceName: jellyseerr
         - name: immich
           type: immich
+          category: Media
           baseUrl: "http://immich-server:2283"
           apiKey: "${IMMICH_API_KEY:CHANGE_ME}"
           enabled: true
+          serviceName: immich-server
         - name: qbittorrent
           type: qbittorrent
+          category: Media
           baseUrl: "http://qbittorrent:8080"
           apiKey: ""
           enabled: true
+          nodePort: 31579   # multi-port svc; pin web UI
+        - name: flaresolverr
+          type: generic
+          category: Media
+          baseUrl: "http://flaresolverr"
+          enabled: true
+          serviceName: flaresolverr
+
+        # ---------------- Observability ----------------
+        - name: grafana
+          type: generic
+          category: Observability
+          baseUrl: "http://grafana"
+          enabled: true
+          serviceName: grafana
+        - name: prometheus
+          type: generic
+          category: Observability
+          baseUrl: "http://prometheus:9090"
+          enabled: true
+          serviceName: prometheus
+        - name: victorialogs
+          type: generic
+          category: Observability
+          baseUrl: "http://victorialogs:9428"
+          enabled: true
+          serviceName: victorialogs
+        - name: radar
+          type: generic
+          category: Observability
+          baseUrl: "http://radar-svc:9280"
+          enabled: true
+          serviceName: radar-svc
+
+        # ---------------- Smart Home ----------------
+        - name: home-assistant
+          type: tcp
+          category: Smart Home
+          baseUrl: "http://192.168.0.199:8123"
+          enabled: true
+          serviceName: homeassistant
+        - name: frigate
+          type: generic
+          category: Smart Home
+          baseUrl: "http://frigate"
+          enabled: true
+          nodePort: 31052   # multi-port svc; pin web UI
+        - name: go2rtc
+          type: tcp
+          category: Smart Home
+          baseUrl: "http://192.168.0.199:31060"
+          enabled: true
+          # no dedicated web UI to link
+        - name: mqtt
+          type: tcp
+          category: Smart Home
+          baseUrl: "http://mqtt:1883"
+          enabled: true
+          # broker, no web UI to link
+
+        # ---------------- Apps & Tools ----------------
+        - name: n8n
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://n8n-svc"
+          enabled: true
+          serviceName: n8n-svc
+        - name: code-server
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://code-server"
+          enabled: true
+          serviceName: code-server
+        - name: cloudbeaver
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://cloudbeaver:8978"
+          enabled: true
+          serviceName: cloudbeaver
+        - name: guacamole
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://guacamole"
+          enabled: true
+          serviceName: guacamole
+        - name: vaultwarden
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://vault"
+          enabled: true
+          serviceName: vault
+        - name: fileserver
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://fileserver"
+          enabled: true
+          serviceName: fileserver
+        - name: openspeedtest
+          type: generic
+          category: Apps & Tools
+          baseUrl: "http://openspeedtest:3000"
+          enabled: true
+          serviceName: openspeedtest
+        - name: portainer
+          type: generic
+          category: Apps & Tools
+          baseUrl: "https://portainer:9443"
+          enabled: true
+          nodePort: 30492   # multi-port svc; pin HTTPS UI
+
+        # ---------------- Databases & Infra (health only) ----------------
+        - name: postgres
+          type: tcp
+          category: Databases & Infra
+          baseUrl: "http://postgres:5432"
+          enabled: true
+          # DB, no web UI
+        - name: immich-postgres
+          type: tcp
+          category: Databases & Infra
+          baseUrl: "http://immich-postgres:5432"
+          enabled: true
+        - name: immich-redis
+          type: tcp
+          category: Databases & Infra
+          baseUrl: "http://immich-redis:6379"
+          enabled: true
+        - name: immich-ml
+          type: generic
+          category: Databases & Infra
+          baseUrl: "http://immich-machine-learning:3003"
+          enabled: true
+        - name: minio
+          type: generic
+          category: Databases & Infra
+          baseUrl: "http://minio:9000"
+          enabled: true
+          nodePort: 30879   # console UI (2nd port)

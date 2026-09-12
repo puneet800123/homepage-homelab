@@ -368,6 +368,48 @@ a:hover { text-decoration: underline; }
 .app-name { font-weight: 600; text-transform: capitalize; }
 .app-stats { font-family: var(--mono); font-size: 0.8rem; color: var(--text-muted); }
 .app-stats div { display: flex; justify-content: space-between; }
+/* clickable app tile */
+.app-link { text-decoration: none; color: inherit; position: relative; transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease; }
+.app-link:hover { text-decoration: none; transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 26px rgba(56,189,248,.15); }
+.app-open { margin-top: 4px; font-family: var(--mono); font-size: .72rem; color: var(--accent); opacity: 0; transition: opacity .15s ease; }
+.app-link:hover .app-open { opacity: 1; }
+/* category groups within app status — color-coded panels */
+.app-cat {
+  --cat: #93a1b3;
+  margin-bottom: 22px;
+  padding: 16px 16px 6px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  border-top: 3px solid var(--cat);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--cat) 10%, transparent), transparent 120px),
+    var(--bg-card);
+  box-shadow: var(--shadow);
+}
+.app-cat-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.app-cat-icon {
+  width: 30px; height: 30px; flex: 0 0 30px;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 1rem; border-radius: 8px;
+  background: color-mix(in srgb, var(--cat) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cat) 45%, transparent);
+}
+.app-cat-title {
+  margin: 0; font-size: 1.05rem; font-weight: 700; color: var(--text);
+  letter-spacing: .01em;
+}
+.app-cat-count {
+  margin-left: auto;
+  font-family: var(--mono); font-size: .72rem; font-weight: 600;
+  color: var(--cat);
+  background: color-mix(in srgb, var(--cat) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--cat) 40%, transparent);
+  border-radius: 999px; padding: 2px 10px;
+}
+.apps-subgrid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+/* tiles inherit a subtle tint of their category colour on the left edge */
+.app-cat .app-card { border-left: 3px solid color-mix(in srgb, var(--cat) 55%, var(--border)); }
+.app-cat .app-link:hover { border-color: var(--cat); box-shadow: 0 8px 26px color-mix(in srgb, var(--cat) 25%, transparent); }
 
 /* states */
 .is-error .metric-value,

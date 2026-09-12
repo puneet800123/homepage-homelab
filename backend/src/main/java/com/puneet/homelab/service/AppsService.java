@@ -26,10 +26,12 @@ public class AppsService {
 
     private final WebClient.Builder builder;
     private final AppsProperties props;
+    private final KubernetesService k8s;
 
-    public AppsService(WebClient.Builder builder, AppsProperties props) {
+    public AppsService(WebClient.Builder builder, AppsProperties props, KubernetesService k8s) {
         this.builder = builder;
         this.props = props;
+        this.k8s = k8s;
     }
 
     public List<AppStatus> all() {
@@ -41,22 +43,43 @@ public class AppsService {
                 .filter(a -> name.equalsIgnoreCase(a.getName()))
                 .findFirst()
                 .map(this::status)
-                .orElse(new AppStatus(name, "unknown", AppStatus.Health.NOT_CONFIGURED, Map.of(),
+                .orElse(new AppStatus(name, "unknown", null, AppStatus.Health.NOT_CONFIGURED, Map.of(), null,
                         "No app configured with name '" + name + "'"));
     }
 
+    /** Wraps the health probe result to attach the (dynamically resolved) nodePort + category. */
     private AppStatus status(AppsProperties.AppConfig cfg) {
+        AppStatus s = probe(cfg);
+        Integer port = resolveNodePort(cfg);
+        String category = cfg.getCategory() != null ? cfg.getCategory() : "Other";
+        return new AppStatus(s.name(), s.type(), category, s.health(), s.stats(), port, s.error());
+    }
+
+    /**
+     * Resolves the NodePort for the tile link. Prefers a live lookup by K8s Service
+     * name (so it auto-updates if the port changes); falls back to a static config
+     * nodePort; null means the tile is not clickable.
+     */
+    private Integer resolveNodePort(AppsProperties.AppConfig cfg) {
+        if (cfg.getServiceName() != null && !cfg.getServiceName().isBlank()) {
+            Integer live = k8s.nodePortForService(cfg.getServiceName());
+            if (live != null) return live;
+        }
+        return cfg.getNodePort() > 0 ? cfg.getNodePort() : null;
+    }
+
+    private AppStatus probe(AppsProperties.AppConfig cfg) {
         String type = cfg.getType() == null ? "" : cfg.getType().toLowerCase();
 
         // qBittorrent needs no API key in this setup; everything else does.
-        boolean keyless = "qbittorrent".equals(type);
+        boolean keyless = !type.matches("sonarr|radarr|lidarr|prowlarr|bazarr|immich");
         if (!keyless && !cfg.isConfigured()) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.NOT_CONFIGURED,
-                    Map.of(), "API key not configured");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.NOT_CONFIGURED,
+                    Map.of(), null, "API key not configured");
         }
         if (!cfg.isEnabled()) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.NOT_CONFIGURED,
-                    Map.of(), "Disabled");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.NOT_CONFIGURED,
+                    Map.of(), null, "Disabled");
         }
         try {
             return switch (type) {
@@ -67,12 +90,13 @@ public class AppsService {
                 case "bazarr"   -> arrGeneric(cfg, "v3");
                 case "immich"      -> immichStatus(cfg);
                 case "qbittorrent" -> qbittorrentStatus(cfg);
+                case "tcp"         -> tcpStatus(cfg);
                 default -> genericHealth(cfg);
             };
         } catch (Exception e) {
             log.debug("App status error [{}]: {}", cfg.getName(), e.toString());
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    Map.of(), e.getMessage());
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    Map.of(), null, e.getMessage());
         }
     }
 
@@ -87,8 +111,8 @@ public class AppsService {
         Map<String, Object> sys = getJson(c, "/api/" + apiVer + "/system/status", cfg.getApiKey());
         Map<String, Object> stats = new LinkedHashMap<>();
         if (sys == null) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    stats, "No response from system/status");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    stats, null, "No response from system/status");
         }
         if (sys.get("version") != null) stats.put("version", sys.get("version"));
 
@@ -101,7 +125,7 @@ public class AppsService {
         if (queue != null && queue.get("totalRecords") != null) {
             stats.put("Queue", queue.get("totalRecords"));
         }
-        return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.OK, stats, null);
+        return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.OK, stats, null, null);
     }
 
     /** Minimal *arr check (status + version only). */
@@ -110,11 +134,11 @@ public class AppsService {
         Map<String, Object> sys = getJson(c, "/api/" + apiVer + "/system/status", cfg.getApiKey());
         Map<String, Object> stats = new LinkedHashMap<>();
         if (sys == null) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    stats, "No response from system/status");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    stats, null, "No response from system/status");
         }
         if (sys.get("version") != null) stats.put("version", sys.get("version"));
-        return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.OK, stats, null);
+        return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.OK, stats, null, null);
     }
 
     /** Immich: {@code GET /api/server/statistics} with the x-api-key header. */
@@ -132,14 +156,14 @@ public class AppsService {
 
         Map<String, Object> stats = new LinkedHashMap<>();
         if (st == null) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    stats, "No response from server/statistics");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    stats, null, "No response from server/statistics");
         }
         if (st.get("photos") != null) stats.put("Photos", st.get("photos"));
         if (st.get("videos") != null) stats.put("Videos", st.get("videos"));
         Object usage = st.get("usage");
         if (usage instanceof Number n) stats.put("Usage", humanBytes(n.longValue()));
-        return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.OK, stats, null);
+        return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.OK, stats, null, null);
     }
 
     /** qBittorrent: version + active torrent count (unauthenticated in this setup). */
@@ -155,8 +179,8 @@ public class AppsService {
 
         Map<String, Object> stats = new LinkedHashMap<>();
         if (version == null) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    stats, "No response from app/version");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    stats, null, "No response from app/version");
         }
         stats.put("version", version.trim());
 
@@ -170,7 +194,26 @@ public class AppsService {
                     .count();
             stats.put("Downloading", downloading);
         }
-        return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.OK, stats, null);
+        return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.OK, stats, null, null);
+    }
+
+    /** TCP connect check for non-HTTP services (databases, brokers). */
+    private AppStatus tcpStatus(AppsProperties.AppConfig cfg) {
+        String hostPort = cfg.getBaseUrl().replaceFirst("^\\w+://", "");
+        String host = hostPort.contains(":") ? hostPort.substring(0, hostPort.indexOf(':')) : hostPort;
+        int port = 80;
+        if (hostPort.contains(":")) {
+            try { port = Integer.parseInt(hostPort.substring(hostPort.indexOf(':') + 1).replaceAll("/.*$", "")); }
+            catch (NumberFormatException ignored) {}
+        }
+        try (java.net.Socket s = new java.net.Socket()) {
+            s.connect(new java.net.InetSocketAddress(host, port), 3000);
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.OK,
+                    Map.of("port", port), null, null);
+        } catch (Exception e) {
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    Map.of(), null, "TCP connect failed");
+        }
     }
 
     /** Fallback: a plain reachability check against the base URL. */
@@ -184,11 +227,11 @@ public class AppsService {
                 .block();
 
         if (ok == null) {
-            return new AppStatus(cfg.getName(), cfg.getType(), AppStatus.Health.UNREACHABLE,
-                    Map.of(), "No response");
+            return new AppStatus(cfg.getName(), cfg.getType(), null, AppStatus.Health.UNREACHABLE,
+                    Map.of(), null, "No response");
         }
         AppStatus.Health health = ok < 500 ? AppStatus.Health.OK : AppStatus.Health.DEGRADED;
-        return new AppStatus(cfg.getName(), cfg.getType(), health, Map.of("httpStatus", ok), null);
+        return new AppStatus(cfg.getName(), cfg.getType(), null, health, Map.of("httpStatus", ok), null, null);
     }
 
     // ------------------------------------------------------------------ helpers

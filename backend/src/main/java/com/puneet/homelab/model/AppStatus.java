@@ -9,8 +9,10 @@ import java.util.Map;
 public record AppStatus(
         String name,
         String type,
+        String category,
         Health health,
         Map<String, Object> stats,
+        Integer nodePort,
         String error
 ) {
     public enum Health {
